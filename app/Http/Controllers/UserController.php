@@ -51,6 +51,7 @@ class UserController extends Controller
                 ]);
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
+                var_dump($response);
                 if ($response['success'] == true) {
                     $result['success'] = true;
                     break;
