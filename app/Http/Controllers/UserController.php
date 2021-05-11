@@ -285,7 +285,7 @@ class UserController extends Controller
 
     public function checkUser($token)
     {
-        $user = User::where('token', $token)->first();
+        $user = DB::table('users')->where('token', $token)->first();
         if ($user) {
             return true;
         } else {
