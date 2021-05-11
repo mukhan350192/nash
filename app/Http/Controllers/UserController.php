@@ -79,6 +79,7 @@ class UserController extends Controller
         $iin = $request->input('iin');
         $type = $request->input('type');
         $code = $request->input('code');
+        $password = $request->input('password');
         $result['success'] = false;
         do {
             if (!$fio) {
@@ -101,6 +102,7 @@ class UserController extends Controller
 
             $token = Str::random(60);
             $token = sha1($token . time());
+            $password = bcrypt($password);
             DB::beginTransaction();
             $user = DB::table('users')->insertGetId([
                 'companyName' => $companyName,
@@ -111,6 +113,7 @@ class UserController extends Controller
                 'iin' => $iin,
                 'type' => $type,
                 'token' => $token,
+                'password' => $password,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
