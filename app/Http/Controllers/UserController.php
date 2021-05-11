@@ -35,7 +35,7 @@ class UserController extends Controller
                 break;
             }
             $user = User::where('phone', $phone)->where('email', $email)->first();
-            if (!$user) {
+            if ($user) {
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
