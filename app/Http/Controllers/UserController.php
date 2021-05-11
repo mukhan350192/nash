@@ -50,7 +50,6 @@ class UserController extends Controller
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
-                var_dump($response);
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
@@ -95,7 +94,7 @@ class UserController extends Controller
                 break;
             }
             $user = User::where('phone', $phone)->where('email', $email)->first();
-            if (!$user) {
+            if ($user) {
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
