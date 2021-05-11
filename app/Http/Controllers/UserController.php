@@ -104,7 +104,7 @@ class UserController extends Controller
             $token = sha1($token . time());
             $password = bcrypt($password);
             DB::beginTransaction();
-            $user = DB::table('users')->insertGetId([
+            $users = DB::table('users')->insertGetId([
                 'companyName' => $companyName,
                 'fio' => $fio,
                 'position' => $position,
@@ -117,8 +117,9 @@ class UserController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+            var_dump($users);
 
-            if (!$user) {
+            if (!$users) {
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
