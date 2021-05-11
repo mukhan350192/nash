@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -65,7 +66,8 @@ class UserController extends Controller
         return response()->json($result);
     }
 
-    public function stepOne(Request $request){
+    public function stepOne(Request $request)
+    {
         $companyName = $request->input('companyName');
         $fio = $request->input('fio');
         $position = $request->input('position');
@@ -92,6 +94,8 @@ class UserController extends Controller
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
+            $token = Str::random(60);
+            $token = sha1($token . time());
             DB::beginTransaction();
             $user = DB::table('users')->insertGetId([
                 'companyName' => $companyName,
@@ -101,11 +105,12 @@ class UserController extends Controller
                 'email' => $email,
                 'iin' => $iin,
                 'type' => $type,
+                'token' => $token,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
 
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
@@ -141,5 +146,168 @@ class UserController extends Controller
         } while (false);
 
         return response()->json($result);
+    }
+
+    public function stepTwo(Request $request)
+    {
+        $token = $request->input('token');
+        $sphere = $request->input('sphere');
+        $description = $request->input('description');
+        $amount = $request->input('amount');
+        $id = $request->input('id');
+        $result['success'] = false;
+        do {
+            if (!$token) {
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            if (!$sphere) {
+                $result['message'] = 'Не передан сфера судебного';
+                break;
+            }
+            if (!$description) {
+                $result['message'] = 'Не передан описание';
+                break;
+            }
+            if (!$amount) {
+                $result['message'] = 'Не передан сумма иска';
+                break;
+            }
+            if (!$id) {
+                $result['message'] = 'Не передан номер заявки';
+                break;
+            }
+            $user = $this->checkUser($token);
+            if (!$user) {
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            DB::table('users')->where('token', $token)->update([
+                'description' => $description,
+                'sphere' => $sphere,
+                'amount' => $amount,
+            ]);
+            $send = $this->sendTwo($id, $sphere, $description, $amount);
+            if ($send) {
+                $result['success'] = true;
+                break;
+            } else {
+                $result['message'] = 'Попробуйте позже';
+                break;
+            }
+
+        } while (false);
+        return response()->json($result);
+    }
+
+    public function sendTwo($id, $sphere, $description, $amount)
+    {
+        $http = new Client(['verify' => false]);
+        $link = 'http://178.170.221.46/api/site/step2.php';
+        try {
+            $response = $http->get($link, [
+                'query' => [
+                    'id' => $id,
+                    'sphere' => $sphere,
+                    'description' => $description,
+                    'amount' => $amount,
+                ]
+            ]);
+            $response = $response->getBody();
+            $response = json_decode($response, true);
+            if ($response['success'] == true) {
+                $result['success'] = true;
+                return true;
+            } else if ($response['success'] == false) {
+                $result['message'] = 'Попробуйте позже';
+                return false;
+            }
+
+        } catch (BadResponseException $e) {
+            info($e);
+        }
+        return false;
+    }
+
+    public function stepThree(Request $request)
+    {
+        $token = $request->input('token');
+        $typePayment = $request->input('typePayment');
+        $amountPayment = $request->input('amountPayment');
+        $id = $request->input('id');
+
+        $result['success'] = false;
+        do {
+            if (!$token) {
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            if (!$id) {
+                $result['message'] = 'Не передан номер заявки';
+                break;
+            }
+            if (!$typePayment) {
+                $result['message'] = 'Не передан тип оплаты';
+                break;
+            }
+            $user = $this->checkUser($token);
+            if (!$user) {
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            DB::table('users')->where('token', $token)->update([
+                'typePayment' => $typePayment,
+                'amountPayment' => $amountPayment,
+            ]);
+            $send = $this->sendThree($id, $typePayment, $amountPayment);
+            if ($send) {
+                $result['success'] = true;
+                break;
+            } else {
+                $result['message'] = 'Попробуйте позже';
+                break;
+            }
+
+        } while (false);
+        return response()->json($result);
+    }
+
+
+    public function checkUser($token)
+    {
+        $user = User::where('token', $token)->first();
+        if ($user) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function sendThree($id, $typePayment, $amountPayment)
+    {
+        $http = new Client(['verify' => false]);
+        $link = 'http://178.170.221.46/api/site/step3.php';
+        try {
+            $response = $http->get($link, [
+                'query' => [
+                    'id' => $id,
+                    'typePayment' => $typePayment,
+                    'amountPayment' => $amountPayment,
+                ]
+            ]);
+            $response = $response->getBody();
+            $response = json_decode($response, true);
+            if ($response['success'] == true) {
+                $result['success'] = true;
+                return true;
+            } else if ($response['success'] == false) {
+                $result['message'] = 'Попробуйте позже';
+                return false;
+            }
+
+        } catch (BadResponseException $e) {
+            info($e);
+        }
+        return false;
     }
 }
