@@ -141,6 +141,7 @@ class UserController extends Controller
                 if ($response['success'] == true) {
                     $result['success'] = true;
                     $result['id'] = $response['id'];
+                    $result['token'] = $token;
                     break;
                 } else if ($response['success'] == false) {
                     $result['message'] = 'Попробуйте позже';
