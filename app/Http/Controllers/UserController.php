@@ -137,12 +137,10 @@ class UserController extends Controller
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
-                var_dump($response);
                 $response = json_decode($response, true);
-                echo "yes <br>";
-                var_dump($response);
                 if ($response['success'] == true) {
                     $result['success'] = true;
+                    $result['id'] = $response['id'];
                     break;
                 } else if ($response['success'] == false) {
                     $result['message'] = 'Попробуйте позже';
