@@ -120,9 +120,12 @@ class UserController extends Controller
             var_dump($users);
 
             if (!$users) {
+                DB::rollBack();
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
+            DB::commit();
+
             $http = new Client(['verify' => false]);
             $link = 'http://178.170.221.46/api/site/step1.php';
             try {
@@ -138,7 +141,6 @@ class UserController extends Controller
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
-                $response = json_decode($response, true);
                 if ($response['success'] == true) {
                     $result['success'] = true;
                     $result['id'] = $response['id'];
@@ -152,7 +154,7 @@ class UserController extends Controller
             } catch (BadResponseException $e) {
                 info($e);
             }
-            DB::commit();
+
 
         } while (false);
 
