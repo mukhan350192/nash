@@ -117,7 +117,6 @@ class UserController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            var_dump($users);
 
             if (!$users) {
                 DB::rollBack();
@@ -270,7 +269,7 @@ class UserController extends Controller
                 break;
             }
             DB::table('users')->where('token', $token)->update([
-                'typePayment' => $typePayment,
+                'paymentType' => $typePayment,
                 'amountPayment' => $amountPayment,
             ]);
             $send = $this->sendThree($id, $typePayment, $amountPayment);
