@@ -39,15 +39,17 @@ class UserController extends Controller
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
+            $code = rand(1000, 9999);
             $http = new Client(['verify' => false]);
-            $link = 'http://37.18.30.37/api/identificationNash';
+            $link = 'http://37.18.30.37/api/identification';
             try {
                 $response = $http->get($link, [
                     'query' => [
                         'phone' => $phone,
+                        'code' => $code,
                     ]
                 ]);
-                $response = $response->getBody();
+                $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
                 if ($response['success'] == true) {
                     $result['success'] = true;
@@ -75,6 +77,7 @@ class UserController extends Controller
         $email = $request->input('email');
         $iin = $request->input('iin');
         $type = $request->input('type');
+        $code = $request->input('code');
         $result['success'] = false;
         do {
             if (!$fio) {
@@ -94,6 +97,7 @@ class UserController extends Controller
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
+
             $token = Str::random(60);
             $token = sha1($token . time());
             DB::beginTransaction();
@@ -128,7 +132,7 @@ class UserController extends Controller
                         'iin' => $iin,
                     ]
                 ]);
-                $response = $response->getBody();
+                $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
                 if ($response['success'] == true) {
                     $result['success'] = true;
@@ -213,7 +217,7 @@ class UserController extends Controller
                     'amount' => $amount,
                 ]
             ]);
-            $response = $response->getBody();
+            $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             if ($response['success'] == true) {
                 $result['success'] = true;
@@ -295,7 +299,7 @@ class UserController extends Controller
                     'amountPayment' => $amountPayment,
                 ]
             ]);
-            $response = $response->getBody();
+            $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             if ($response['success'] == true) {
                 $result['success'] = true;
