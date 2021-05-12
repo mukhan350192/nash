@@ -53,6 +53,10 @@ class UserController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
+                    DB::table('code')->insertGetId([
+                        'phone' => $phone,
+                        'code' => $code,
+                    ]);
                     $result['success'] = true;
                     break;
                 } else if ($response['success'] == false) {
@@ -103,6 +107,12 @@ class UserController extends Controller
             $token = Str::random(60);
             $token = sha1($token . time());
             $password = bcrypt($password);
+            $check = DB::table('code')->where('phone',$phone)->where('code',$code)->first();
+            if (!$check){
+                $result['message'] = 'Код подтверждение не совпадает';
+                break;
+            }
+
             DB::beginTransaction();
             $users = DB::table('users')->insertGetId([
                 'companyName' => $companyName,
