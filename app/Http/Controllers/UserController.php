@@ -258,7 +258,9 @@ class UserController extends Controller
         $typePayment = $request->input('typePayment');
         $amountPayment = $request->input('amountPayment');
         $id = $request->input('id');
-
+        $utm_source = $request->input('utm_source');
+        $click_id = $request->input('click_id');
+        $web_id = $request->input('web_id');
         $result['success'] = false;
         do {
             if (!$token) {
@@ -282,9 +284,11 @@ class UserController extends Controller
                 'paymentType' => $typePayment,
                 'amountPayment' => $amountPayment,
             ]);
+
             $send = $this->sendThree($id, $typePayment, $amountPayment);
             if ($send) {
                 $result['success'] = true;
+                $this->sendCPA($utm_source,$click_id,$id);
                 break;
             } else {
                 $result['message'] = 'Попробуйте позже';
@@ -332,5 +336,41 @@ class UserController extends Controller
             info($e);
         }
         return false;
+    }
+
+    public function sendCPA($utm_source,$click_id,$id){
+        do{
+            if (!$utm_source){
+                return false;
+            }
+            if (!$click_id){
+                return false;
+            }
+            if (!$id){
+                return false;
+            }
+            if ($utm_source == 'doaff'){
+                $http = new Client(['verify' => false]);
+
+                $link = 'https://tracker2.doaffiliate.net/api/nashcompany-kz';
+                try {
+                    $response = $http->get($link, [
+                        'query' => [
+                            'type' => 'CPA',
+                            'lead' => $id,
+                            'v' => $click_id,
+                        ]
+                    ]);
+                    //$response = $response->getBody()->getContents();
+                    info("DOAFF part three ".$response->getBody());
+                    return true;
+
+                } catch (BadResponseException $e) {
+                    info($e);
+                }
+                return false;
+            }
+        }while(false);
+        return true;
     }
 }
