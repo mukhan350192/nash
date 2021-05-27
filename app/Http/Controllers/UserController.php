@@ -288,7 +288,6 @@ class UserController extends Controller
             $send = $this->sendThree($id, $typePayment, $amountPayment);
             if ($send) {
                 $result['success'] = true;
-                $this->sendCPA($utm_source,$click_id,$id);
                 break;
             } else {
                 $result['message'] = 'Попробуйте позже';
