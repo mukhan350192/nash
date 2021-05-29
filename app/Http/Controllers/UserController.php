@@ -107,8 +107,8 @@ class UserController extends Controller
             $token = Str::random(60);
             $token = sha1($token . time());
             $password = bcrypt($password);
-            $check = DB::table('code')->where('phone',$phone)->where('code',$code)->first();
-            if (!$check){
+            $check = DB::table('code')->where('phone', $phone)->where('code', $code)->first();
+            if (!$check) {
                 $result['message'] = 'Код подтверждение не совпадает';
                 break;
             }
@@ -150,7 +150,7 @@ class UserController extends Controller
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
-                $response = json_decode($response,true);
+                $response = json_decode($response, true);
                 if ($response['success'] == true) {
                     $result['success'] = true;
                     $result['id'] = $response['id'];
@@ -285,7 +285,7 @@ class UserController extends Controller
                 'amountPayment' => $amountPayment,
             ]);
 
-            $send = $this->sendThree($id, $typePayment, $amountPayment);
+            $send = $this->sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id);
             if ($send) {
                 $result['success'] = true;
                 break;
@@ -309,7 +309,7 @@ class UserController extends Controller
         }
     }
 
-    public function sendThree($id, $typePayment, $amountPayment)
+    public function sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id)
     {
         $http = new Client(['verify' => false]);
         $link = 'http://178.170.221.46/api/site/step3.php';
@@ -319,6 +319,8 @@ class UserController extends Controller
                     'id' => $id,
                     'typePayment' => $typePayment,
                     'amountPayment' => $amountPayment,
+                    'utm_source' => $utm_source,
+                    'click_id' => $click_id,
                 ]
             ]);
             $response = $response->getBody()->getContents();
@@ -337,18 +339,19 @@ class UserController extends Controller
         return false;
     }
 
-    public function sendCPA($utm_source,$click_id,$id){
-        do{
-            if (!$utm_source){
+    public function sendCPA($utm_source, $click_id, $id)
+    {
+        do {
+            if (!$utm_source) {
                 return false;
             }
-            if (!$click_id){
+            if (!$click_id) {
                 return false;
             }
-            if (!$id){
+            if (!$id) {
                 return false;
             }
-            if ($utm_source == 'doaff'){
+            if ($utm_source == 'doaff') {
                 $http = new Client(['verify' => false]);
 
                 $link = 'https://tracker2.doaffiliate.net/api/nashcompany-kz';
@@ -361,7 +364,7 @@ class UserController extends Controller
                         ]
                     ]);
                     //$response = $response->getBody()->getContents();
-                    info("DOAFF part three ".$response->getBody());
+                    info("DOAFF part three " . $response->getBody());
                     return true;
 
                 } catch (BadResponseException $e) {
@@ -369,7 +372,7 @@ class UserController extends Controller
                 }
                 return false;
             }
-        }while(false);
+        } while (false);
         return true;
     }
 }
