@@ -147,6 +147,7 @@ class UserController extends Controller
                         'email' => $email,
                         'companyName' => $companyName,
                         'iin' => $iin,
+                        'code' => $code,
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
@@ -257,10 +258,12 @@ class UserController extends Controller
         $token = $request->input('token');
         $typePayment = $request->input('typePayment');
         $amountPayment = $request->input('amountPayment');
+        $date_payment = $request->input('date_payment');
         $id = $request->input('id');
         $utm_source = $request->input('utm_source');
         $click_id = $request->input('click_id');
         $web_id = $request->input('web_id');
+        $period = $request->input('period');
         $result['success'] = false;
         do {
             if (!$token) {
@@ -285,7 +288,7 @@ class UserController extends Controller
                 'amountPayment' => $amountPayment,
             ]);
 
-            $send = $this->sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id);
+            $send = $this->sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id, $date_payment, $period);
             if ($send) {
                 $result['success'] = true;
                 break;
@@ -309,7 +312,7 @@ class UserController extends Controller
         }
     }
 
-    public function sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id)
+    public function sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id, $date_payment, $period)
     {
         $http = new Client(['verify' => false]);
         $link = 'http://178.170.221.46/api/site/step3.php';
@@ -321,6 +324,8 @@ class UserController extends Controller
                     'amountPayment' => $amountPayment,
                     'utm_source' => $utm_source,
                     'click_id' => $click_id,
+                    'date_payment' => $date_payment,
+                    'period' => $period,
                 ]
             ]);
             $response = $response->getBody()->getContents();
