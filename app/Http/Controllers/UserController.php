@@ -84,6 +84,8 @@ class UserController extends Controller
         $type = $request->input('type');
         $code = $request->input('code');
         $password = $request->input('password');
+        $utm_source = $request->input('utm_source');
+        $click_id = $request->input('click_id');
         $result['success'] = false;
         do {
             if (!$fio) {
@@ -165,6 +167,13 @@ class UserController extends Controller
             } catch (BadResponseException $e) {
                 info($e);
             }
+            if (isset($utm_source) && $utm_source == 'guruleads'){
+                $id = $result['id'];
+                $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
+                $s = file_get_contents($url);
+                info('status guruleads'.$s);
+            }
+
 
 
         } while (false);
