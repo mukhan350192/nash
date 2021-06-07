@@ -34,6 +34,13 @@ class UserController extends Controller
                 $result['message'] = 'Не передан почта';
                 break;
             }
+            $user_email = User::where('email',$email)->first();
+            if ($user_email){
+                $result['message'] = 'Такой пользователь уже зарегистрован';
+                break;
+            }
+
+
             $user = User::where('phone', $phone)->where('email', $email)->first();
             if ($user) {
                 $result['message'] = 'Такой пользователь уже зарегистрован';
