@@ -92,6 +92,7 @@ class UserController extends Controller
                 $result['message'] = 'Не передан ФИО';
                 break;
             }
+            var_dump($fio);
             if (!$phone) {
                 $result['message'] = 'Не передан телефон';
                 break;
