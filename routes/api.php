@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,3 +23,6 @@ Route::get('/identification',[UserController::class,'identification']);
 Route::get('/stepOne',[UserController::class,'stepOne']);
 Route::get('/stepTwo',[UserController::class,'stepTwo']);
 Route::get('/stepThree',[UserController::class,'stepThree']);
+
+Route::get('/addFeedback',[ComplaintController::class,'addFeedback']);
+Route::get('/getFeedback',[ComplaintController::class,'getFeedback']);

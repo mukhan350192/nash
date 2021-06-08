@@ -53,7 +53,8 @@ class ComplaintController extends Controller
             $page = 1;
         }
         $skip = ($page-1)*10;
-        $feedback = DB::table('feedback')->where('status',2)->skip($skip)->get();
+        $limit = 10;
+        $feedback = DB::table('feedback')->where('status',2)->skip($skip)->limit($limit)->get();
         $result['data'] = $feedback;
     }
 }
