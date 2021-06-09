@@ -26,3 +26,5 @@ Route::get('/stepThree',[UserController::class,'stepThree']);
 
 Route::get('/addFeedback',[ComplaintController::class,'addFeedback']);
 Route::get('/getFeedback',[ComplaintController::class,'getFeedback']);
+
+Route::post('/getData',[UserController::class,'getData']);

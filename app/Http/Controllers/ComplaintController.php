@@ -38,7 +38,7 @@ class ComplaintController extends Controller
                 'comment' => $comment,
                 'status' => 1,
             ]);
-            if (!$feedback){
+            if (!$feedback) {
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
@@ -47,14 +47,15 @@ class ComplaintController extends Controller
         return response()->json($result);
     }
 
-    public function getFeedback(Request $request){
+    public function getFeedback(Request $request)
+    {
         $page = $request->input('page');
-        if (!$page){
+        if (!$page) {
             $page = 1;
         }
-        $skip = ($page-1)*10;
+        $skip = ($page - 1) * 10;
         $limit = 10;
-        $feedback = DB::table('feedback')->where('status',2)->skip($skip)->limit($limit)->get();
+        $feedback = DB::table('feedback')->where('status', 2)->skip($skip)->limit($limit)->get();
         $result['data'] = $feedback;
     }
 }

@@ -34,8 +34,8 @@ class UserController extends Controller
                 $result['message'] = 'Не передан почта';
                 break;
             }
-            $user_email = User::where('email',$email)->first();
-            if ($user_email){
+            $user_email = User::where('email', $email)->first();
+            if ($user_email) {
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
@@ -108,8 +108,8 @@ class UserController extends Controller
                 $result['message'] = 'Не передан почта';
                 break;
             }
-            $user_email = User::where('email',$email)->first();
-            if ($user_email){
+            $user_email = User::where('email', $email)->first();
+            if ($user_email) {
                 $result['message'] = 'Такой пользователь уже зарегистрован';
                 break;
             }
@@ -181,13 +181,12 @@ class UserController extends Controller
             } catch (BadResponseException $e) {
                 info($e);
             }
-            if (isset($utm_source) && $utm_source == 'guruleads'){
+            if (isset($utm_source) && $utm_source == 'guruleads') {
                 $id = $result['id'];
                 $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
                 $s = file_get_contents($url);
-                info('status guruleads'.$s);
+                info('status guruleads' . $s);
             }
-
 
 
         } while (false);
@@ -402,5 +401,22 @@ class UserController extends Controller
             }
         } while (false);
         return true;
+    }
+
+    public function getData(Request $request)
+    {
+        $id = $request->input('id');
+        $s = file_get_contents("http://178.170.221.46/api/site/data.php?id=$id");
+        $s = json_decode($s, true);
+        $result['success'] = $s['success'];
+        $result['iin'] = $s['iin'];
+        $result['amountPayment'] = $s['amountPayment'];
+        $result['client_type'] = $s['client_type'];
+        $result['companyName'] = $s['companyName'];
+        $result['fio'] = $s['fio'];
+        $result['code'] = $s['code'];
+        $result['phone'] = $s['phone'];
+        return response()->json($result);
+
     }
 }
