@@ -164,6 +164,7 @@ class UserController extends Controller
                         'companyName' => $companyName,
                         'iin' => $iin,
                         'code' => $code,
+                        'utm_source' => $utm_source,
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
