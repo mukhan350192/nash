@@ -488,7 +488,14 @@ class UserController extends Controller
                     if (isset($response['lead']) && $response['lead']){
                         $result['lead'] = $response['lead'];
                         $result['id'] = $response['id'];
-                        $result['code'] = $response['code'];
+                        $result['step'] = $response['code'];
+                        $result['phone'] = $response['phone'];
+                        $result['iin'] = $response['iin'];
+                        $result['client_type'] = $response['client_type'];
+                        $result['fio'] = $response['fio'];
+                        if (isset($response['companyName'])){
+                            $result['companyName'] = $response['companyName'];
+                        }
                         break;
                     }
                     return true;
