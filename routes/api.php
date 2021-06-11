@@ -28,3 +28,6 @@ Route::get('/addFeedback',[ComplaintController::class,'addFeedback']);
 Route::get('/getFeedback',[ComplaintController::class,'getFeedback']);
 
 Route::post('/getData',[UserController::class,'getData']);
+
+Route::post('/login',[UserController::class,'login']);
+Route::post('/getUserData',[UserController::class,'getUserData']);

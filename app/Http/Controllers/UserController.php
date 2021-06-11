@@ -449,4 +449,54 @@ class UserController extends Controller
         }while(false);
         return response()->json($result);
     }
+
+    public function getUserData(Request $request){
+        //$iin = $request->input('iin');
+        $token = $request->input('token');
+        $result['success'] = false;
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            $user = User::where('token',$token)->first();
+            if (!$user){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $iin = $user->iin;
+            $http = new Client(['verify' => false]);
+            $link = 'http://178.170.221.46/api/site/getData.php';
+            try {
+                $response = $http->get($link, [
+                    'query' => [
+                        'iin' => $iin,
+                    ]
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+                if ($response['success'] == true) {
+                    $result['success'] = true;
+                    if (isset($response) && $response['stage']){
+                        $result['stage'] = $response['stage'];
+                        break;
+                    }
+                    if (isset($response) && $response['lead']){
+                        $result['lead'] = $response['lead'];
+                        $result['id'] = $response['id'];
+                        $result['code'] = $response['code'];
+                        break;
+                    }
+                    return true;
+                } else if ($response['success'] == false) {
+                    $result['message'] = 'Попробуйте позже';
+                    return false;
+                }
+
+            } catch (BadResponseException $e) {
+                info($e);
+            }
+        }while(false);
+        return response()->json($result);
+    }
 }
