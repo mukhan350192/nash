@@ -481,11 +481,11 @@ class UserController extends Controller
                 $response = json_decode($response, true);
                 if ($response['success'] == true) {
                     $result['success'] = true;
-                    if (isset($response) && $response['stage']){
+                    if (isset($response['stage']) && $response['stage']){
                         $result['stage'] = $response['stage'];
                         break;
                     }
-                    if (isset($response) && $response['lead']){
+                    if (isset($response['lead']) && $response['lead']){
                         $result['lead'] = $response['lead'];
                         $result['id'] = $response['id'];
                         $result['code'] = $response['code'];
