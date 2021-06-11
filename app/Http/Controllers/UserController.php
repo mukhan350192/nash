@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Faker\Provider\Payment;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -419,5 +421,32 @@ class UserController extends Controller
         $result['phone'] = $s['phone'];
         return response()->json($result);
 
+    }
+
+    public function login(Request $request){
+        $iin = $request->input('iin');
+        $password = $request->input('password');
+        $result['success'] = true;
+        do{
+            if (!$iin){
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            if (!$password){
+                $result['message'] = 'Не передан пароль';
+                break;
+            }
+            $user = User::where('iin',$iin)->first();
+            if (!$user){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            if (!Hash::check($password,$user->password)){
+                $result['message'] = 'Неправильный логин или пароль';
+                break;
+            }
+            $result['success'] = true;
+        }while(false);
+        return response()->json($result);
     }
 }
