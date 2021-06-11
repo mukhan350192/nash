@@ -423,10 +423,10 @@ class UserController extends Controller
 
     }
 
-    public function login(Request $request){
+    public function signIn(Request $request){
         $iin = $request->input('iin');
         $password = $request->input('password');
-        $result['success'] = true;
+        $result['success'] = false;
         do{
             if (!$iin){
                 $result['message'] = 'Не передан иин';
