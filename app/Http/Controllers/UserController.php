@@ -447,7 +447,7 @@ class UserController extends Controller
             }
             $token = Str::random(60);
             $token = sha1($token.time());
-            User::where('id',$user->id)->update(['token',$token]);
+            User::where('id',$user->id)->update(['token'=>$token]);
             $result['token'] = $token;
             $result['success'] = true;
         }while(false);
