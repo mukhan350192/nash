@@ -408,17 +408,22 @@ class UserController extends Controller
 
     public function getData(Request $request)
     {
-        $id = $request->input('id');
-        $s = file_get_contents("http://178.170.221.46/api/site/data.php?id=$id");
+        $token = $request->input('token');
+        $user = User::where('token',$token)->first();
+        $iin = $user->iin;
+        $s = file_get_contents("http://178.170.221.46/api/site/data.php?iin=$iin");
         $s = json_decode($s, true);
         $result['success'] = $s['success'];
-        $result['iin'] = $s['iin'];
-        $result['amountPayment'] = $s['amountPayment'];
-        $result['client_type'] = $s['client_type'];
-        $result['companyName'] = $s['companyName'];
-        $result['fio'] = $s['fio'];
-        $result['code'] = $s['code'];
-        $result['phone'] = $s['phone'];
+        if ($result['success'] == true){
+            $result['iin'] = $s['iin'];
+            $result['amountPayment'] = $s['amountPayment'];
+            $result['client_type'] = $s['client_type'];
+            $result['companyName'] = $s['companyName'];
+            $result['fio'] = $s['fio'];
+            $result['code'] = $s['code'];
+            $result['phone'] = $s['phone'];
+        }
+
         return response()->json($result);
 
     }
@@ -520,60 +525,29 @@ class UserController extends Controller
         return response()->json($result);
     }
 
-    public function getUserDataLead(Request $request){
-        $iin = 990702300080;
-        //$token = $request->input('token');
-        $result = [];
-        do {
-/*            if (!$token){
-                $result['success'] = false;
-                $result['message'] = 'Не передан иин';
+    public function getUserData(Request $request){
+        $token = $request->input('token');
+        $result['success'] = false;
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан токен';
                 break;
             }
             $user = User::where('token',$token)->first();
             if (!$user){
-                $result['success'] = false;
-                $result['message'] = 'Не найден пользователь';
+                $result['message'] = 'Не найден профиль';
                 break;
             }
-            $iin = $user->iin;*/
+            $iin = $user->iin;
             $http = new Client(['verify' => false]);
-            $link = 'http://178.170.221.46/api/site/getDataLead.php';
-            try {
-                $response = $http->get($link, [
-                    'query' => [
-                        'iin' => $iin,
-                    ]
-                ]);
-                $response = $response->getBody()->getContents();
-                $response = json_encode($response);
-                var_dump($response);
-                print_r($response);
-                die();
-                $response = json_decode($response, true);
-                var_dump($response);
-                /*if (count($response) == 0) {
-                    $result['success'] = false;
-                    break;
-                }
-                foreach ($response as $res) {
-                    $result[] = [
-                        'lead' => 'Чтобы ваше дело рассмотрели юристы, пожалуйста заполните анкету до конца',
-                        'code' => 1,
-                        'id' => $response['id'],
-                        'phone' => $response['phone'],
-                        'iin' => $response['iin'],
-                        'client_type' => $response['client_type'],
-                        'companyName' => $response['companyName'],
-                        'fio' => $response['fio'],
-                        'success' => true,
-                    ];
-                }*/
+            $link = 'http://nash-crm.kz/api/site/data.php';
+            $http->get($link, [
+                'query' => [
+                    'iin' => $iin,
+                ],
+            ]);
 
-            } catch (BadResponseException $e) {
-                info($e);
-            }
-        } while (false);
+        }while(false);
         return response()->json($result);
     }
 }

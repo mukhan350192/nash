@@ -31,4 +31,4 @@ Route::post('/getData',[UserController::class,'getData']);
 
 Route::post('/signIn',[UserController::class,'signIn']);
 Route::post('/getUserDataDeal',[UserController::class,'getUserDataDeal']);
-Route::post('/getUserDataLead',[UserController::class,'getUserDataLead']);
+Route::post('/getUserData',[UserController::class,'getUserData']);
