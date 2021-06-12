@@ -457,16 +457,17 @@ class UserController extends Controller
 
     public function getUserDataDeal(Request $request)
     {
-        //$iin = $request->input('iin');
         $token = $request->input('token');
         $result = [];
         do {
-            if (!$token){
+           if (!$token){
+                $result['success'] = false;
                 $result['message'] = 'Не передан иин';
                 break;
             }
             $user = User::where('token',$token)->first();
             if (!$user){
+                $result['success'] = false;
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
@@ -484,19 +485,90 @@ class UserController extends Controller
 
                 if (count($response) == 0) {
                     $result['success'] = false;
+                    break;
+                }
+                foreach ($response as $res) {
+                    if ($res['type'] == 'deal') {
+                        $result[] = [
+                            'title' => $res['title'],
+                            'description' => $res['description'],
+                            'dealID' => $res['dealID'],
+                            'service' => $res['service'],
+                            'button' => $res['button'],
+                            'payment' => $res['payment'],
+                            'type' => $res['type'],
+                        ];
+                    }
+                    if ($res['type'] == 'lead') {
+                        $result[] = [
+                            'lead' => $res['lead'],
+                            'step' => $res['code'],
+                            'id' => $res['id'],
+                            'phone' => $res['phone'],
+                            'client_type' => $res['client_type'],
+                            'fio' => $res['fio'],
+                            'type' => $res['type'],
+                        ];
+                    }
+
+                }
+
+            } catch (BadResponseException $e) {
+                info($e);
+            }
+        } while (false);
+        return response()->json($result);
+    }
+
+    public function getUserDataLead(Request $request){
+        $iin = 990702300080;
+        //$token = $request->input('token');
+        $result = [];
+        do {
+/*            if (!$token){
+                $result['success'] = false;
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            $user = User::where('token',$token)->first();
+            if (!$user){
+                $result['success'] = false;
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $iin = $user->iin;*/
+            $http = new Client(['verify' => false]);
+            $link = 'http://178.170.221.46/api/site/getDataLead.php';
+            try {
+                $response = $http->get($link, [
+                    'query' => [
+                        'iin' => $iin,
+                    ]
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_encode($response);
+                var_dump($response);
+                print_r($response);
+                die();
+                $response = json_decode($response, true);
+                var_dump($response);
+                /*if (count($response) == 0) {
+                    $result['success'] = false;
+                    break;
                 }
                 foreach ($response as $res) {
                     $result[] = [
-                        'title' => $res['title'],
-                        'description' => $res['description'],
-                        'dealID' => $res['dealID'],
-                        'service' => $res['service'],
-                        'button' => $res['button'],
-                        'payment' => $res['payment'],
+                        'lead' => 'Чтобы ваше дело рассмотрели юристы, пожалуйста заполните анкету до конца',
+                        'code' => 1,
+                        'id' => $response['id'],
+                        'phone' => $response['phone'],
+                        'iin' => $response['iin'],
+                        'client_type' => $response['client_type'],
+                        'companyName' => $response['companyName'],
+                        'fio' => $response['fio'],
+                        'success' => true,
                     ];
-
-
-                }
+                }*/
 
             } catch (BadResponseException $e) {
                 info($e);
