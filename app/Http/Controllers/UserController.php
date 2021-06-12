@@ -423,42 +423,44 @@ class UserController extends Controller
 
     }
 
-    public function signIn(Request $request){
+    public function signIn(Request $request)
+    {
         $iin = $request->input('iin');
         $password = $request->input('password');
         $result['success'] = false;
-        do{
-            if (!$iin){
+        do {
+            if (!$iin) {
                 $result['message'] = 'Не передан иин';
                 break;
             }
-            if (!$password){
+            if (!$password) {
                 $result['message'] = 'Не передан пароль';
                 break;
             }
-            $user = User::where('iin',$iin)->first();
-            if (!$user){
+            $user = User::where('iin', $iin)->first();
+            if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
-            if (!Hash::check($password,$user->password)){
+            if (!Hash::check($password, $user->password)) {
                 $result['message'] = 'Неправильный логин или пароль';
                 break;
             }
             $token = Str::random(60);
-            $token = sha1($token.time());
-            User::where('id',$user->id)->update(['token'=>$token]);
+            $token = sha1($token . time());
+            User::where('id', $user->id)->update(['token' => $token]);
             $result['token'] = $token;
             $result['success'] = true;
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function getUserData(Request $request){
+    public function getUserDataDeal(Request $request)
+    {
         //$iin = $request->input('iin');
         $token = $request->input('token');
-        $result['success'] = false;
-        do{
+        $result = [];
+        do {
             if (!$token){
                 $result['message'] = 'Не передан иин';
                 break;
@@ -479,35 +481,27 @@ class UserController extends Controller
                 ]);
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
-                if ($response['success'] == true) {
-                    $result['success'] = true;
-                    if (isset($response['stage']) && $response['stage']){
-                        $result['stage'] = $response['stage'];
-                        break;
-                    }
-                    if (isset($response['lead']) && $response['lead']){
-                        $result['lead'] = $response['lead'];
-                        $result['id'] = $response['id'];
-                        $result['step'] = $response['code'];
-                        $result['phone'] = $response['phone'];
-                        $result['iin'] = $response['iin'];
-                        $result['client_type'] = $response['client_type'];
-                        $result['fio'] = $response['fio'];
-                        if (isset($response['companyName'])){
-                            $result['companyName'] = $response['companyName'];
-                        }
-                        break;
-                    }
-                    return true;
-                } else if ($response['success'] == false) {
-                    $result['message'] = 'Попробуйте позже';
-                    return false;
+
+                if (count($response) == 0) {
+                    $result['success'] = false;
+                }
+                foreach ($response as $res) {
+                    $result[] = [
+                        'title' => $res['title'],
+                        'description' => $res['description'],
+                        'dealID' => $res['dealID'],
+                        'service' => $res['service'],
+                        'button' => $res['button'],
+                        'payment' => $res['payment'],
+                    ];
+
+
                 }
 
             } catch (BadResponseException $e) {
                 info($e);
             }
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 }
