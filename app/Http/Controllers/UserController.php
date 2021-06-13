@@ -502,6 +502,7 @@ class UserController extends Controller
                             'button' => $res['button'],
                             'payment' => $res['payment'],
                             'type' => $res['type'],
+                            'sphere' => $res['sphere'],
                         ];
                     }
                     if ($res['type'] == 'lead') {
