@@ -551,4 +551,20 @@ class UserController extends Controller
         }while(false);
         return response()->json($result);
     }
+
+    public function stageDeal(Request $request){
+        $ID = $request->input('ID');
+        $result['success'] = false;
+        do{
+            if (!$ID){
+                $result['message'] = 'НЕ передан ID';
+                break;
+            }
+            $url = "http://nash-crm.kz/api/webhock/status.php?ID=$ID";
+            $s = file_get_contents($url);
+            $s = json_decode($s,true);
+            $result['success'] = $s['success'];
+        }while(false);
+        return response()->json($result);
+    }
 }
