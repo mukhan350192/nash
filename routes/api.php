@@ -33,3 +33,4 @@ Route::post('/signIn',[UserController::class,'signIn']);
 Route::post('/getUserDataDeal',[UserController::class,'getUserDataDeal']);
 Route::post('/getUserData',[UserController::class,'getUserData']);
 Route::get('/stageDeal',[UserController::class,'stageDeal']);
+Route::get('/leadgid',[UserController::class,'leadgid']);
