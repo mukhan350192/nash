@@ -61,4 +61,9 @@ class UrlController extends Controller
         } while (false);
         return response()->json($result);
     }
+
+    public function removeShortUrl(Request $request){
+        $id = $request->input('id');
+        DB::table('short_url')->where('id',$id)->update(['status'=>2]);
+    }
 }
