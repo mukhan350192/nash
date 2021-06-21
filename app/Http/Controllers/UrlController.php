@@ -64,6 +64,15 @@ class UrlController extends Controller
 
     public function removeShortUrl(Request $request){
         $id = $request->input('id');
+        $typePayment = $request->input('typePayment');
+        $amountPayment = $request->input('amountPayment');
+        $date_payment = $request->input('date_payment');
+        $period = $request->input('period');
+
         DB::table('short_url')->where('id',$id)->update(['status'=>2]);
+        $data = DB::table('short_url')->where('id',$id)->first();
+        $user = new UserController();
+        $user->sendThree($data->leadID,$typePayment,$amountPayment,'','',$date_payment,$period);
+
     }
 }
