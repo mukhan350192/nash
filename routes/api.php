@@ -39,3 +39,4 @@ Route::get('/leadgid',[CPAController::class,'leadgid']);
 Route::get('/leadgidFree',[CPAController::class,'leadgidFree']);
 Route::get('/signDoc',[UrlController::class,'signDoc']);
 Route::get('/getDataSign',[UrlController::class,'getDataSign']);
+Route::get('/removeShortUrl',[UrlController::class,'removeShortUrl']);
