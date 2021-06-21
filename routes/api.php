@@ -25,6 +25,7 @@ Route::get('/identification',[UserController::class,'identification']);
 Route::get('/stepOne',[UserController::class,'stepOne']);
 Route::get('/stepTwo',[UserController::class,'stepTwo']);
 Route::get('/stepThree',[UserController::class,'stepThree']);
+Route::get('/stepThreeUrl',[UserController::class,'stepThreeUrl']);
 
 Route::get('/addFeedback',[ComplaintController::class,'addFeedback']);
 Route::get('/getFeedback',[ComplaintController::class,'getFeedback']);

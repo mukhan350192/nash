@@ -184,11 +184,13 @@ class UserController extends Controller
             } catch (BadResponseException $e) {
                 info($e);
             }
+            info($utm_source);
             if (isset($utm_source) && $utm_source == 'guruleads') {
                 $id = $result['id'];
+                info($id);
                 $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
                 $s = file_get_contents($url);
-                info('status guruleads' . $s);
+                info('status2 guruleads' . $s);
             }
 
 
@@ -309,6 +311,51 @@ class UserController extends Controller
                 break;
             }
             DB::table('users')->where('token', $token)->update([
+                'paymentType' => $typePayment,
+                'amountPayment' => $amountPayment,
+            ]);
+
+            $send = $this->sendThree($id, $typePayment, $amountPayment, $utm_source, $click_id, $date_payment, $period);
+            if ($send) {
+                $result['success'] = true;
+                break;
+            } else {
+                $result['message'] = 'Попробуйте позже';
+                break;
+            }
+
+        } while (false);
+        return response()->json($result);
+    }
+
+
+    public function stepThreeUrl(Request $request)
+    {
+        $iin = $request->input('iin');
+        $typePayment = $request->input('typePayment');
+        $amountPayment = $request->input('amountPayment');
+        $date_payment = $request->input('date_payment');
+        $id = $request->input('id');
+        $utm_source = $request->input('utm_source');
+        $click_id = $request->input('click_id');
+        $web_id = $request->input('web_id');
+        $period = $request->input('period');
+        $result['success'] = false;
+        do {
+            if (!$iin) {
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            if (!$id) {
+                $result['message'] = 'Не передан номер заявки';
+                break;
+            }
+            if (!$typePayment) {
+                $result['message'] = 'Не передан тип оплаты';
+                break;
+            }
+
+            DB::table('users')->where('iin', $iin)->update([
                 'paymentType' => $typePayment,
                 'amountPayment' => $amountPayment,
             ]);
