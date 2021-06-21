@@ -514,6 +514,8 @@ class UserController extends Controller
                             'client_type' => $res['client_type'],
                             'fio' => $res['fio'],
                             'type' => $res['type'],
+                            'sphere' => $res['sphere'],
+                            'amount' => $res['amount'],
                         ];
                     }
 
