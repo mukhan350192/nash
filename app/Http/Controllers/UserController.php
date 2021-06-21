@@ -409,12 +409,12 @@ class UserController extends Controller
     public function getData(Request $request)
     {
         $token = $request->input('token');
-        $user = User::where('token',$token)->first();
+        $user = User::where('token', $token)->first();
         $iin = $user->iin;
         $s = file_get_contents("http://178.170.221.46/api/site/data.php?iin=$iin");
         $s = json_decode($s, true);
         $result['success'] = $s['success'];
-        if ($result['success'] == true){
+        if ($result['success'] == true) {
             $result['iin'] = $s['iin'];
             $result['amountPayment'] = $s['amountPayment'];
             $result['client_type'] = $s['client_type'];
@@ -423,9 +423,7 @@ class UserController extends Controller
             $result['code'] = $s['code'];
             $result['phone'] = $s['phone'];
         }
-
         return response()->json($result);
-
     }
 
     public function signIn(Request $request)
@@ -465,13 +463,13 @@ class UserController extends Controller
         $token = $request->input('token');
         $result = [];
         do {
-           if (!$token){
+            if (!$token) {
                 $result['success'] = false;
                 $result['message'] = 'Не передан иин';
                 break;
             }
-            $user = User::where('token',$token)->first();
-            if (!$user){
+            $user = User::where('token', $token)->first();
+            if (!$user) {
                 $result['success'] = false;
                 $result['message'] = 'Не найден пользователь';
                 break;
@@ -528,16 +526,17 @@ class UserController extends Controller
         return response()->json($result);
     }
 
-    public function getUserData(Request $request){
+    public function getUserData(Request $request)
+    {
         $token = $request->input('token');
         $result['success'] = false;
-        do{
-            if (!$token){
+        do {
+            if (!$token) {
                 $result['message'] = 'Не передан токен';
                 break;
             }
-            $user = User::where('token',$token)->first();
-            if (!$user){
+            $user = User::where('token', $token)->first();
+            if (!$user) {
                 $result['message'] = 'Не найден профиль';
                 break;
             }
@@ -550,38 +549,24 @@ class UserController extends Controller
                 ],
             ]);
 
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function stageDeal(Request $request){
+    public function stageDeal(Request $request)
+    {
         $ID = $request->input('ID');
         $result['success'] = false;
-        do{
-            if (!$ID){
+        do {
+            if (!$ID) {
                 $result['message'] = 'НЕ передан ID';
                 break;
             }
             $url = "http://nash-crm.kz/api/webhock/status.php?ID=$ID";
             $s = file_get_contents($url);
-            $s = json_decode($s,true);
+            $s = json_decode($s, true);
             $result['success'] = $s['success'];
-        }while(false);
+        } while (false);
         return response()->json($result);
-    }
-
-    public function leadgid(Request $request){
-        $click_id = $request->input('click_id');
-        $id = $request->input('id');
-        $url = "http://go.leadgid.ru/aff_lsr?goal_id=4605&adv_sub=$id&transaction_id=$click_id";
-        $s = file_get_contents($url);
-        info($s);
-    }
-    public function leadgidFree(Request $request){
-        $click_id = $request->input('click_id');
-        $id = $request->input('id');
-        $url = "http://go.leadgid.ru/aff_lsr?offer_id=5428&adv_sub=$id&transaction_id=$click_id";
-        $s = file_get_contents($url);
-        info($s);
     }
 }

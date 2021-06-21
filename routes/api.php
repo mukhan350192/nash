@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\CPAController;
+use App\Http\Controllers\UrlController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +35,6 @@ Route::post('/signIn',[UserController::class,'signIn']);
 Route::post('/getUserDataDeal',[UserController::class,'getUserDataDeal']);
 Route::post('/getUserData',[UserController::class,'getUserData']);
 Route::get('/stageDeal',[UserController::class,'stageDeal']);
-Route::get('/leadgid',[UserController::class,'leadgid']);
-Route::get('/leadgidFree',[UserController::class,'leadgidFree']);
+Route::get('/leadgid',[CPAController::class,'leadgid']);
+Route::get('/leadgidFree',[CPAController::class,'leadgidFree']);
+Route::get('/signDoc',[UrlController::class,'signDoc']);
