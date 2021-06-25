@@ -73,6 +73,5 @@ class UrlController extends Controller
         $data = DB::table('short_url')->where('id',$id)->first();
         $user = new UserController();
         $user->sendThree($data->leadID,$typePayment,$amountPayment,'','',$date_payment,$period);
-
     }
 }

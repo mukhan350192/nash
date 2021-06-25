@@ -185,7 +185,7 @@ class UserController extends Controller
                 info($e);
             }
             info($utm_source);
-            if (isset($utm_source) && $utm_source == 'guruleads') {
+            if (isset($utm_source) && $utm_source == 'guruleads_1') {
                 $id = $result['id'];
                 info($id);
                 $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
