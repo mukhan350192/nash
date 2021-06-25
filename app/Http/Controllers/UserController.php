@@ -172,17 +172,18 @@ class UserController extends Controller
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
                 info($utm_source);
-                if (isset($utm_source) && $utm_source == 'guruleads_1') {
-                    $id = $result['id'];
-                    info($id);
-                    $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
-                    $s = file_get_contents($url);
-                    info('status2 guruleads' . $s);
-                }
+
                 if ($response['success'] == true) {
                     $result['success'] = true;
                     $result['id'] = $response['id'];
                     $result['token'] = $token;
+                    if (isset($utm_source) && $utm_source == 'guruleads_1') {
+                        $id = $result['id'];
+                        info($id);
+                        $url = "http://offers.guruleads.ru/postback?clickid=$click_id&goal=loan&status=2&action_id=$id";
+                        $s = file_get_contents($url);
+                        info('status2 guruleads' . $s);
+                    }
                     break;
                 } else if ($response['success'] == false) {
                     $result['message'] = 'Попробуйте позже';
