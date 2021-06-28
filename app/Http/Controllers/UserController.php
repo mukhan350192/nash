@@ -616,4 +616,72 @@ class UserController extends Controller
         } while (false);
         return response()->json($result);
     }
+
+    public function fourthStage(Request $request){
+        $phone = $request->input('phone');
+        $result['success'] = false;
+
+        do{
+            if (!$phone){
+                $result['message'] = 'Не передан телефон';
+                break;
+            }
+            $code = rand(1000,9999);
+
+            $http = new Client(['verify' => false]);
+            $link = 'http://37.18.30.37/api/fourthStage';
+            try {
+                $response = $http->get($link, [
+                    'query' => [
+                        'phone' => $phone,
+                        'code' => $code,
+                    ]
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+
+                if ($response['success'] == true) {
+                    DB::table('code')->insertGetId([
+                        'phone' => $phone,
+                        'code' => $code,
+                    ]);
+                    $result['success'] = true;
+                    break;
+                } else if ($response['success'] == false) {
+                    $result['message'] = 'Попробуйте позже';
+                    break;
+                }
+
+            } catch (BadResponseException $e) {
+                info($e);
+            }
+
+        }while(false);
+
+        return response()->json($result);
+    }
+
+    public function checkCode(Request $request){
+        $phone = $request->input('phone');
+        $code = $request->input('code');
+        $result['success'] = false;
+        do{
+            if (!$phone){
+                $result['message'] = 'Не передан телефон';
+                break;
+            }
+            if (!$code){
+                $result['message'] = 'Не передан код';
+                break;
+            }
+            $data = DB::table('code')->where('phone',$phone)->where('code',$code)->first();
+            if (!$data){
+                $result['message'] = 'Не совпадают код';
+                break;
+            }
+            $result['success'] = true;
+        }while(false);
+        return response()->json($result);
+    }
+
 }

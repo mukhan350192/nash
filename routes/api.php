@@ -22,6 +22,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/identification',[UserController::class,'identification']);
+Route::get('/fourthStage',[UserController::class,'fourthStage']);
+Route::get('/checkCode',[UserController::class,'checkCode']);
+
 Route::get('/stepOne',[UserController::class,'stepOne']);
 Route::get('/stepTwo',[UserController::class,'stepTwo']);
 Route::get('/stepThree',[UserController::class,'stepThree']);
