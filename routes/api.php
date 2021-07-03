@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CPAController;
+use App\Http\Controllers\PayboxController;
 use App\Http\Controllers\UrlController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -44,3 +45,6 @@ Route::get('/leadgidFree',[CPAController::class,'leadgidFree']);
 Route::get('/signDoc',[UrlController::class,'signDoc']);
 Route::get('/getDataSign',[UrlController::class,'getDataSign']);
 Route::get('/removeShortUrl',[UrlController::class,'removeShortUrl']);
+//paybox
+Route::post('/makePayment',[PayboxController::class,'makePayment']);
+Route::post('/paymentResult',[PayboxController::class,'paymentResult'])->name('payment-result');
