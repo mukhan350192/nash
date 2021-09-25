@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnticollectorController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CPAController;
 use App\Http\Controllers\PayboxController;
@@ -48,3 +49,10 @@ Route::get('/removeShortUrl',[UrlController::class,'removeShortUrl']);
 //paybox
 Route::post('/makePayment',[PayboxController::class,'makePayment']);
 Route::post('/paymentResult',[PayboxController::class,'paymentResult'])->name('payment-result');
+
+
+//anticollector
+Route::post('/firstStep',[AnticollectorController::class,'firstStep']);
+Route::post('/secondStep',[AnticollectorController::class,'secondStep']);
+Route::post('/sendMessage',[AnticollectorController::class,'sendMessage']);
+Route::post('/lastStep',[AnticollectorController::class,'lastStep']);
