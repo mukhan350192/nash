@@ -192,4 +192,53 @@ class AnticollectorController extends Controller
         }
         return false;
     }
+
+    public function getDocumentLink(Request $request){
+        $token = $request->input('token');
+        $result['success']  = false;
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            $user = $this->checkToken($token);
+            if (!$user){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $result['success'] = true;
+            $result['doc1'] = 'https://google.com';
+            $result['doc2'] = 'https://google.com';
+            $result['doc3'] = 'https://google.com';
+        }while(false);
+        return response()->json($result);
+    }
+
+    public function getPush(Request $request){
+        $token = $request->input('token');
+        $result['success']  = false;
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            $user = $this->checkToken($token);
+            if (!$user){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $result['success'] = true;
+            $result['data'] = [
+                0 => [
+                    'status' => 0,
+                    'message' => 'Мы отправили письмо к МФО',
+                ],
+                1 => [
+                    'status' => 1,
+                    'message' => 'Мы отправили письмо к ЧСИ'
+                ]
+            ];
+        }while(false);
+        return response()->json($result);
+    }
 }

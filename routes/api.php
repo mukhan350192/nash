@@ -37,7 +37,6 @@ Route::get('/getFeedback',[ComplaintController::class,'getFeedback']);
 
 Route::post('/getData',[UserController::class,'getData']);
 
-Route::post('/signIn',[UserController::class,'signIn']);
 Route::post('/getUserDataDeal',[UserController::class,'getUserDataDeal']);
 Route::post('/getUserData',[UserController::class,'getUserData']);
 Route::get('/stageDeal',[UserController::class,'stageDeal']);
@@ -56,3 +55,7 @@ Route::post('/firstStep',[AnticollectorController::class,'firstStep']);
 Route::post('/secondStep',[AnticollectorController::class,'secondStep']);
 Route::post('/sendMessage',[AnticollectorController::class,'sendMessage']);
 Route::post('/lastStep',[AnticollectorController::class,'lastStep']);
+Route::post('/signIn',[UserController::class,'signIn']);
+Route::post('/getDocumentLink',[AnticollectorController::class,'getDocumentLink']);
+Route::post('/getPush',[AnticollectorController::class,'getPush']);
+
