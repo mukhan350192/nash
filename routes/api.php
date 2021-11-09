@@ -58,4 +58,5 @@ Route::post('/lastStep',[AnticollectorController::class,'lastStep']);
 Route::post('/signIn',[UserController::class,'signIn']);
 Route::post('/getDocumentLink',[AnticollectorController::class,'getDocumentLink']);
 Route::post('/getPush',[AnticollectorController::class,'getPush']);
+Route::post('/uploadDocuments',[AnticollectorController::class,'uploadDocuments']);
 

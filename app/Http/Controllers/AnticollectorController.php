@@ -276,7 +276,7 @@ class AnticollectorController extends Controller
     }
 
     public function uploadDocuments(Request $request){
-        $files = $request->input('files');
+        $files = $request->file('files');
         $token = $request->input('token');
         $result['success'] = false;
         do{
@@ -295,17 +295,18 @@ class AnticollectorController extends Controller
             }
             foreach ($files as $file){
                 $name = $file->getClientOriginalName();
-                $name = sha1(time() . $name) . '.' . $request->file('file')->extension();;
+                $name = sha1(time() . $name) . '.' . $file->extension();;
 
                 $destinationPath = public_path('/images/');
                 $file->move($destinationPath, $name);
                 DB::table('user_docs')->insertGetId([
                     'doc' => $name,
-                    'user_id' => $user->id,
+                    'user_id' => $user,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
             }
+            $result['success'] = true;
         }while(false);
         return response()->json($result);
     }
