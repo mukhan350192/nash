@@ -118,12 +118,13 @@ class AnticollectorController extends Controller
             $code = rand(1000,9999);
 
             $http = new Client(['verify' => false]);
-            $link = 'http://37.18.30.37/api/identification';
+            $link = 'http://37.18.30.37/api/typeOne';
             try {
                 $response = $http->get($link, [
                     'query' => [
                         'phone' => $phone,
                         'code' => $code,
+                        'source' => 'anticollector.kz',
                     ]
                 ]);
                 $response = $response->getBody()->getContents();
