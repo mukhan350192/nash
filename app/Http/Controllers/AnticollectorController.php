@@ -61,7 +61,10 @@ class AnticollectorController extends Controller
                 break;
             }
             $code = rand(1000,9999);
-
+            DB::table('code')->insertGetId([
+                'phone' => $phone,
+                'code' => $code,
+            ]);
             $http = new Client(['verify' => false]);
             $link = 'http://37.18.30.37/api/typeOne';
             try {
@@ -76,10 +79,7 @@ class AnticollectorController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
-                    DB::table('code')->insertGetId([
-                        'phone' => $phone,
-                        'code' => $code,
-                    ]);
+
                     $result['success'] = true;
                     break;
                 } else if ($response['success'] == false) {
@@ -147,6 +147,7 @@ class AnticollectorController extends Controller
             }
             $code = rand(1000,9999);
 
+
             $http = new Client(['verify' => false]);
             $link = 'http://37.18.30.37/api/typeOne';
             try {
@@ -160,17 +161,17 @@ class AnticollectorController extends Controller
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
 
-                if ($response['success'] == true) {
-                    DB::table('code')->insertGetId([
-                        'phone' => $phone,
-                        'code' => $code,
-                    ]);
-                    $result['success'] = true;
-                    break;
-                } else if ($response['success'] == false) {
-                    $result['message'] = 'Попробуйте позже';
-                    break;
-                }
+                    if ($response['success'] == true) {
+                        DB::table('code')->insertGetId([
+                            'phone' => $phone,
+                            'code' => $code,
+                        ]);
+                        $result['success'] = true;
+                        break;
+                    } else if ($response['success'] == false) {
+                        $result['message'] = 'Попробуйте позже';
+                        break;
+                    }
 
             } catch (BadResponseException $e) {
                 info($e);
