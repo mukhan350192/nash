@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnticollectorUserModel;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -19,6 +20,7 @@ class AnticollectorController extends Controller
         $iin = $request->input('iin');
         $email = $request->input('email');
         $password = $request->input('password');
+
         $result['success'] = false;
         do {
             if (!$fio) {
@@ -45,15 +47,14 @@ class AnticollectorController extends Controller
             $token = sha1($token . time());
             $password = bcrypt($password);
             DB::beginTransaction();
-            $userID = DB::table('anticollector_users')->insertGetId([
+
+            $userID = AnticollectorUserModel::create([
                 'fio' => $fio,
                 'phone' => $phone,
                 'iin' => $iin,
                 'email' => $email,
                 'password' => $password,
                 'token' => $token,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
             ]);
             if (!$userID) {
                 $result['message'] = 'Попробуйте позже';
@@ -61,7 +62,7 @@ class AnticollectorController extends Controller
                 break;
             }
             $code = rand(1000,9999);
-            DB::table('code')->insertGetId([
+            $s = DB::table('code')->insertGetId([
                 'phone' => $phone,
                 'code' => $code,
             ]);
