@@ -60,6 +60,36 @@ class AnticollectorController extends Controller
                 DB::rollBack();
                 break;
             }
+            $code = rand(1000,9999);
+
+            $http = new Client(['verify' => false]);
+            $link = 'http://37.18.30.37/api/typeOne';
+            try {
+                $response = $http->get($link, [
+                    'query' => [
+                        'phone' => $phone,
+                        'code' => $code,
+                        'source' => 'anticollector.kz',
+                    ]
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+
+                if ($response['success'] == true) {
+                    DB::table('code')->insertGetId([
+                        'phone' => $phone,
+                        'code' => $code,
+                    ]);
+                    $result['success'] = true;
+                    break;
+                } else if ($response['success'] == false) {
+                    $result['message'] = 'Попробуйте позже';
+                    break;
+                }
+
+            } catch (BadResponseException $e) {
+                info($e);
+            }
 
             DB::commit();
             $result['success'] = true;
@@ -239,6 +269,41 @@ class AnticollectorController extends Controller
                     'message' => 'Мы отправили письмо к ЧСИ'
                 ]
             ];
+        }while(false);
+        return response()->json($result);
+    }
+
+    public function uploadDocuments(Request $request){
+        $files = $request->input('files');
+        $token = $request->input('token');
+        $result['success'] = false;
+        do{
+            if(!$files){
+                $result['message'] = 'Не передан файлы';
+                break;
+            }
+            if (!$token){
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            $user = $this->checkToken($token);
+            if (!$user){
+                $result['message'] = 'Пользователь не найден';
+                break;
+            }
+            foreach ($files as $file){
+                $name = $file->getClientOriginalName();
+                $name = sha1(time() . $name) . '.' . $request->file('file')->extension();;
+
+                $destinationPath = public_path('/images/');
+                $file->move($destinationPath, $name);
+                DB::table('user_docs')->insertGetId([
+                    'doc' => $name,
+                    'user_id' => $user->id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
         }while(false);
         return response()->json($result);
     }
