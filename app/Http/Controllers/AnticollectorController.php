@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\BitrixPartOne;
 use App\Models\AnticollectorUserModel;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -43,6 +44,11 @@ class AnticollectorController extends Controller
                 $result['message'] = 'Не передан пароль';
                 break;
             }
+            $user = AnticollectorUserModel::where('email',$email)->first();
+            if ($user){
+                $result['message'] = 'Юзер имеется';
+                break;
+            }
             $token = Str::random(60);
             $token = sha1($token . time());
             $password = bcrypt($password);
@@ -56,16 +62,26 @@ class AnticollectorController extends Controller
                 'password' => $password,
                 'token' => $token,
             ]);
+
             if (!$userID) {
                 $result['message'] = 'Попробуйте позже';
                 DB::rollBack();
                 break;
             }
+
             $code = rand(1000,9999);
             $s = DB::table('code')->insertGetId([
                 'phone' => $phone,
                 'code' => $code,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
+            if (!$s){
+                $result['message'] = 'Попробуйте позже';
+                DB::rollBack();
+                break;
+            }
+
             $http = new Client(['verify' => false]);
             $link = 'http://37.18.30.37/api/typeOne';
             try {
@@ -80,8 +96,17 @@ class AnticollectorController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
+                    $data = [
+                        'fio' => $fio,
+                        'phone' => $phone,
+                        'iin' => $iin,
+                        'email' => $email,
+                        'password' => $password,
+                    ];
+                    $this->sendToBitrixPartOne($data);
                     $result['token'] = $token;
                     $result['success'] = true;
+                    DB::commit();
                     break;
                 } else if ($response['success'] == false) {
                     $result['message'] = 'Попробуйте позже';
@@ -92,9 +117,8 @@ class AnticollectorController extends Controller
                 info($e);
             }
 
-            DB::commit();
-            $result['success'] = true;
-            $result['token'] = $token;
+
+
         } while (false);
         return response()->json($result);
     }
@@ -309,5 +333,24 @@ class AnticollectorController extends Controller
             $result['success'] = true;
         }while(false);
         return response()->json($result);
+    }
+
+    public function sendToBitrixPartOne($data){
+        $http = new Client(['verify' => false]);
+        $link = 'http://nash-crm.kz/api/anticollect/step1.php';
+        try{
+            $response = $http->get($link,[
+                'query' => [
+                    'fio' => $data['fio'],
+                    'phone' => $data['phone'],
+                    'iin' => $data['iin'],
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                ],
+            ]);
+            $response = $response->getBody()->getContents();
+        }catch (BadResponseException $e){
+            info($e);
+        }
     }
 }
