@@ -80,7 +80,7 @@ class AnticollectorController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
-
+                    $result['token'] = $token;
                     $result['success'] = true;
                     break;
                 } else if ($response['success'] == false) {
