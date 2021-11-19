@@ -661,27 +661,6 @@ class UserController extends Controller
         return response()->json($result);
     }
 
-    public function checkCode(Request $request){
-        $phone = $request->input('phone');
-        $code = $request->input('code');
-        $result['success'] = false;
-        do{
-            if (!$phone){
-                $result['message'] = 'Не передан телефон';
-                break;
-            }
-            if (!$code){
-                $result['message'] = 'Не передан код';
-                break;
-            }
-            $data = DB::table('code')->where('phone',$phone)->where('code',$code)->first();
-            if (!$data){
-                $result['message'] = 'Не совпадают код';
-                break;
-            }
-            $result['success'] = true;
-        }while(false);
-        return response()->json($result);
-    }
+
 
 }

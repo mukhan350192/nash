@@ -25,7 +25,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('/identification',[UserController::class,'identification']);
 Route::get('/fourthStage',[UserController::class,'fourthStage']);
-Route::get('/checkCode',[UserController::class,'checkCode']);
 
 Route::get('/stepOne',[UserController::class,'stepOne']);
 Route::get('/stepTwo',[UserController::class,'stepTwo']);
@@ -52,6 +51,7 @@ Route::post('/paymentResult',[PayboxController::class,'paymentResult'])->name('p
 
 //anticollector
 Route::post('/firstStep',[AnticollectorController::class,'firstStep']);
+Route::get('/checkCode',[AnticollectorController::class,'checkCode']);
 Route::post('/secondStep',[AnticollectorController::class,'secondStep']);
 Route::post('/sendMessage',[AnticollectorController::class,'sendMessage']);
 Route::post('/lastStep',[AnticollectorController::class,'lastStep']);
