@@ -404,6 +404,7 @@ class AnticollectorController extends Controller
                 'iin' => $iin,
                 'email' => $email,
                 'password' => $password,
+                'token' => $token,
             ];
             $this->sendToBitrixPartOne($dataToBitrix);
             $this->sendToBitrixCode($code);
@@ -424,7 +425,15 @@ class AnticollectorController extends Controller
             'password' => $data['password'],
         ];
         $all = $this->send($link,$query);
-        $s = AnticollectorUserModel::where('id',$data['id'])->update(['bitrix_id'=>$all]);
+        $s = AnticollectorUserModel::create([
+            'fio' => $data['fio'],
+            'phone' => $data['phone'],
+            'iin' => $data['iin'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'bitrix_id' => $all,
+            'token' => $data['token'],
+        ]);
 
     }
 
