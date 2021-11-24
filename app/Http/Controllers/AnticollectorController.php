@@ -44,20 +44,20 @@ class AnticollectorController extends Controller
                 $result['message'] = 'Не передан пароль';
                 break;
             }
-            $user = AnticollectorUserModel::where('email',$email)->first();
-            if ($user){
+            $user = AnticollectorUserModel::where('email', $email)->first();
+            if ($user) {
                 $result['message'] = 'Юзер имеется';
                 break;
             }
 
-            $user = AnticollectorUserModel::where('phone',$phone)->first();
-            if ($user){
+            $user = AnticollectorUserModel::where('phone', $phone)->first();
+            if ($user) {
                 $result['message'] = 'Юзер имеется';
                 break;
             }
 
-            $user = AnticollectorUserModel::where('iin',$iin)->first();
-            if ($user){
+            $user = AnticollectorUserModel::where('iin', $iin)->first();
+            if ($user) {
                 $result['message'] = 'Юзер имеется';
                 break;
             }
@@ -65,19 +65,19 @@ class AnticollectorController extends Controller
             $token = Str::random(60);
             $token = sha1($token . time());
             $password = bcrypt($password);
-        //    DB::beginTransaction();
+            //    DB::beginTransaction();
 
 
-            $code = rand(1000,9999);
+            $code = rand(1000, 9999);
             $s = DB::table('code')->insertGetId([
                 'phone' => $phone,
                 'code' => $code,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            if (!$s){
+            if (!$s) {
                 $result['message'] = 'Попробуйте позже';
-          //      DB::rollBack();
+                //      DB::rollBack();
                 break;
             }
 
@@ -95,18 +95,18 @@ class AnticollectorController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['success'] == true) {
-                   /* $data = [
-                        'fio' => $fio,
-                        'phone' => $phone,
-                        'iin' => $iin,
-                        'email' => $email,
-                        'password' => $password,
-                        'id' => $userID->id,
-                    ];
-                    $this->sendToBitrixPartOne($data);*/
-                   // $result['token'] = $token;
+                    /* $data = [
+                         'fio' => $fio,
+                         'phone' => $phone,
+                         'iin' => $iin,
+                         'email' => $email,
+                         'password' => $password,
+                         'id' => $userID->id,
+                     ];
+                     $this->sendToBitrixPartOne($data);*/
+                    // $result['token'] = $token;
                     $result['success'] = true;
-             //       DB::commit();
+                    //       DB::commit();
                     break;
                 } else if ($response['success'] == false) {
                     $result['message'] = 'Попробуйте позже';
@@ -116,7 +116,6 @@ class AnticollectorController extends Controller
             } catch (BadResponseException $e) {
                 info($e);
             }
-
 
 
         } while (false);
@@ -141,42 +140,43 @@ class AnticollectorController extends Controller
             DB::beginTransaction();
             $org = '';
             foreach ($organization as $o) {
-                $org .= $o.',';
+                $org .= $o . ',';
             }
             substr($org, 0, -1);
 
-            $bitrix = AnticollectorUserModel::where('id',$user)->select('bitrix_id')->first();
+            $bitrix = AnticollectorUserModel::where('id', $user)->select('bitrix_id')->first();
             $bitrix_id = $bitrix->bitrix_id;
 
-            $userID = DB::table('anticollector_users')->where('id',$user)->update([
+            $userID = DB::table('anticollector_users')->where('id', $user)->update([
                 'organization' => $org,
                 'updated_at' => Carbon::now(),
             ]);
 
-            if (!$userID){
+            if (!$userID) {
                 DB::rollBack();
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
 
-            $this->sendToBitrixPartTwo($org,$bitrix_id);
+            $this->sendToBitrixPartTwo($org, $bitrix_id);
             DB::commit();
             $result['success'] = true;
         } while (false);
         return response()->json($result);
     }
 
-    public function sendMessage(Request $request){
+    public function sendMessage(Request $request)
+    {
         $token = $request->input('token');
         $phone = $request->input('phone');
         $result['success'] = false;
-        do{
+        do {
             $user = $this->checkToken($token);
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
-            $code = rand(1000,9999);
+            $code = rand(1000, 9999);
 
 
             $http = new Client(['verify' => false]);
@@ -192,49 +192,51 @@ class AnticollectorController extends Controller
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
 
-                    if ($response['success'] == true) {
-                        DB::table('code')->insertGetId([
-                            'phone' => $phone,
-                            'code' => $code,
-                        ]);
-                        $result['success'] = true;
-                        break;
-                    } else if ($response['success'] == false) {
-                        $result['message'] = 'Попробуйте позже';
-                        break;
-                    }
+                if ($response['success'] == true) {
+                    DB::table('code')->insertGetId([
+                        'phone' => $phone,
+                        'code' => $code,
+                    ]);
+                    $result['success'] = true;
+                    break;
+                } else if ($response['success'] == false) {
+                    $result['message'] = 'Попробуйте позже';
+                    break;
+                }
 
             } catch (BadResponseException $e) {
                 info($e);
             }
 
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function lastStep(Request $request){
+    public function lastStep(Request $request)
+    {
         $token = $request->input('token');
         $type = $request->input('type');
+        $amount = $request->input('amount');
         $result['success'] = false;
-        do{
-            if (!$token){
+        do {
+            if (!$token) {
                 $result['message'] = 'Не передан токен';
                 break;
             }
-            if (!$type){
+            if (!$type) {
                 $result['message'] = 'Не передан тип';
                 break;
             }
             $user = $this->checkToken($token);
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
             DB::beginTransaction();
-            $userID = DB::table('anticollector_users')->where('id',$user)->update([
+            $userID = DB::table('anticollector_users')->where('id', $user)->update([
                 'type' => $type,
             ]);
-            if (!$userID){
+            if (!$userID) {
                 DB::rollBack();
                 $result['message'] = 'Попробуйте позже';
                 break;
@@ -242,7 +244,7 @@ class AnticollectorController extends Controller
 
             DB::commit();
             $result['success'] = true;
-        }while(false);
+        } while (false);
         return response()->json($result);
 
     }
@@ -256,16 +258,17 @@ class AnticollectorController extends Controller
         return false;
     }
 
-    public function getDocumentLink(Request $request){
+    public function getDocumentLink(Request $request)
+    {
         $token = $request->input('token');
-        $result['success']  = false;
-        do{
-            if (!$token){
+        $result['success'] = false;
+        do {
+            if (!$token) {
                 $result['message'] = 'Не передан токен';
                 break;
             }
             $user = $this->checkToken($token);
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
@@ -273,20 +276,21 @@ class AnticollectorController extends Controller
             $result['doc1'] = 'https://google.com';
             $result['doc2'] = 'https://google.com';
             $result['doc3'] = 'https://google.com';
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function getPush(Request $request){
+    public function getPush(Request $request)
+    {
         $token = $request->input('token');
-        $result['success']  = false;
-        do{
-            if (!$token){
+        $result['success'] = false;
+        do {
+            if (!$token) {
                 $result['message'] = 'Не передан токен';
                 break;
             }
             $user = $this->checkToken($token);
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
             }
@@ -301,66 +305,68 @@ class AnticollectorController extends Controller
                     'message' => 'Мы отправили письмо к ЧСИ'
                 ]
             ];
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function uploadDocuments(Request $request){
+    public function uploadDocuments(Request $request)
+    {
         $file = $request->file('files');
         $token = $request->input('token');
         $result['success'] = false;
-        do{
-            if(!$file){
+        do {
+            if (!$file) {
                 $result['message'] = 'Не передан файлы';
                 break;
             }
-            if (!$token){
+            if (!$token) {
                 $result['message'] = 'Не передан токен';
                 break;
             }
             $user = $this->checkToken($token);
-            if (!$user){
+            if (!$user) {
                 $result['message'] = 'Пользователь не найден';
                 break;
             }
-            $bitrix = AnticollectorUserModel::where('id',$user)->first();
+            $bitrix = AnticollectorUserModel::where('id', $user)->first();
             $bitrix_id = $bitrix->bitrix_id;
-           // foreach ($files as $file){
-                var_dump($file);
-                $name = $file->getClientOriginalName();
-                var_dump($name);
-                $name = sha1(time() . $name) . '.' . $file->extension();;
+            // foreach ($files as $file){
+            var_dump($file);
+            $name = $file->getClientOriginalName();
+            var_dump($name);
+            $name = sha1(time() . $name) . '.' . $file->extension();;
 
-                $destinationPath = public_path('/images/');
-                $file->move($destinationPath, $name);
-                DB::table('user_docs')->insertGetId([
-                    'doc' => $name,
-                    'user_id' => $user,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ]);
-                $fields = [
-                    'file' => public_path('/images/').$name,
-                    'id' => $bitrix_id,
-                ];
-                $url = 'http://nash-crm.kz/api/site/upload.php';
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-                curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                //curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
-                $sResponse = curl_exec ($ch);
-                var_dump($sResponse);
-           // }
+            $destinationPath = public_path('/images/');
+            $file->move($destinationPath, $name);
+            DB::table('user_docs')->insertGetId([
+                'doc' => $name,
+                'user_id' => $user,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            $fields = [
+                'file' => public_path('/images/') . $name,
+                'id' => $bitrix_id,
+            ];
+            $url = 'http://nash-crm.kz/api/site/upload.php';
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+            curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            //curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
+            $sResponse = curl_exec($ch);
+            var_dump($sResponse);
+            // }
             $result['success'] = true;
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function checkCode(Request $request){
-     //   $phone = $request->input('phone');
+    public function checkCode(Request $request)
+    {
+        //   $phone = $request->input('phone');
         $code = $request->input('code');
         $fio = $request->input('fio');
         $phone = $request->input('phone');
@@ -368,12 +374,12 @@ class AnticollectorController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         $result['success'] = false;
-        do{
-            if (!$phone){
+        do {
+            if (!$phone) {
                 $result['message'] = 'Не передан телефон';
                 break;
             }
-            if (!$code){
+            if (!$code) {
                 $result['message'] = 'Не передан код';
                 break;
             }
@@ -393,8 +399,8 @@ class AnticollectorController extends Controller
                 break;
             }
 
-            $data = DB::table('code')->where('phone',$phone)->where('code',$code)->first();
-            if (!$data){
+            $data = DB::table('code')->where('phone', $phone)->where('code', $code)->first();
+            if (!$data) {
                 $result['message'] = 'Не совпадают код';
                 break;
             }
@@ -405,16 +411,18 @@ class AnticollectorController extends Controller
                 'email' => $email,
                 'password' => $password,
                 'token' => $token,
+                'id' => $userID->id,
             ];
             $this->sendToBitrixPartOne($dataToBitrix);
             $this->sendToBitrixCode($code);
             $result['success'] = true;
             $result['token'] = $token;
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 
-    public function sendToBitrixPartOne($data){
+    public function sendToBitrixPartOne($data)
+    {
 
         $link = 'http://nash-crm.kz/api/anticollect/step1.php';
         $query = [
@@ -424,8 +432,8 @@ class AnticollectorController extends Controller
             'email' => $data['email'],
             'password' => $data['password'],
         ];
-        $all = $this->send($link,$query);
-        $s = AnticollectorUserModel::create([
+        $all = $this->send($link, $query);
+      /*  $s = AnticollectorUserModel::create([
             'fio' => $data['fio'],
             'phone' => $data['phone'],
             'iin' => $data['iin'],
@@ -433,42 +441,46 @@ class AnticollectorController extends Controller
             'password' => $data['password'],
             'bitrix_id' => $all,
             'token' => $data['token'],
-        ]);
+        ]);*/
+        AnticollectorUserModel::where('id', $data['id'])->update(['bitrix_id' => $all]);
 
     }
 
-    public function sendToBitrixCode($code){
+    public function sendToBitrixCode($code)
+    {
         $link = 'http://nash-crm.kz/api/anticollect/code.php';
         $query = [
             'code' => $code,
         ];
-        $this->send($link,$query);
+        $this->send($link, $query);
     }
 
-    public function sendToBitrixPartTwo($org,$bitrix_id){
+    public function sendToBitrixPartTwo($org, $bitrix_id)
+    {
         $link = 'http://nash-crm.kz/api/anticollect/step2.php';
         $query = [
             'organization' => $org,
             'id' => $bitrix_id,
         ];
-        $this->send($link,$query);
+        $this->send($link, $query);
     }
 
 
-    public function send($link,$query){
+    public function send($link, $query)
+    {
         $http = new Client(['verify' => false]);
-        try{
-            $response = $http->get($link,[
+        try {
+            $response = $http->get($link, [
                 'query' => $query,
             ]);
             $response = $response->getBody()->getContents();
-            $response = json_decode($response,true);
-            if (isset($response) && isset($response['id'])){
+            $response = json_decode($response, true);
+            if (isset($response) && isset($response['id'])) {
                 return $response['id'];
-            } else{
+            } else {
                 return false;
             }
-        }catch (BadResponseException $e){
+        } catch (BadResponseException $e) {
             info($e);
         }
         return false;
