@@ -241,7 +241,14 @@ class AnticollectorController extends Controller
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
-
+            $bitrix = DB::table('anticollector_users')->where('id', $user)->select('bitrix_id')->first();
+            $bitrix_id = $bitrix->bitrix_id;
+            $data = [
+                'type' => $type,
+                'amount' => $amount,
+                'bitrix_id' => $bitrix_id,
+            ];
+            $this->sendToBitrixLastStep($data);
             DB::commit();
             $result['success'] = true;
         } while (false);
@@ -433,15 +440,15 @@ class AnticollectorController extends Controller
             'password' => $data['password'],
         ];
         $all = $this->send($link, $query);
-      /*  $s = AnticollectorUserModel::create([
-            'fio' => $data['fio'],
-            'phone' => $data['phone'],
-            'iin' => $data['iin'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-            'bitrix_id' => $all,
-            'token' => $data['token'],
-        ]);*/
+        /*  $s = AnticollectorUserModel::create([
+              'fio' => $data['fio'],
+              'phone' => $data['phone'],
+              'iin' => $data['iin'],
+              'email' => $data['email'],
+              'password' => $data['password'],
+              'bitrix_id' => $all,
+              'token' => $data['token'],
+          ]);*/
         AnticollectorUserModel::where('id', $data['id'])->update(['bitrix_id' => $all]);
 
     }
@@ -465,6 +472,16 @@ class AnticollectorController extends Controller
         $this->send($link, $query);
     }
 
+    public function sendToBitrixLastStep($data)
+    {
+        $link = 'http://nash-crm.kz/api/anticollect/lastStep.php';
+        $query = [
+            'type' => $data['type'],
+            'amount' => $data['amount'],
+            'bitrix_id' => $data['bitrix_id'],
+        ];
+        $this->send($link, $query);
+    }
 
     public function send($link, $query)
     {
