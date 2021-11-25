@@ -45,8 +45,11 @@ Route::get('/signDoc',[UrlController::class,'signDoc']);
 Route::get('/getDataSign',[UrlController::class,'getDataSign']);
 Route::get('/removeShortUrl',[UrlController::class,'removeShortUrl']);
 //paybox
-Route::post('/makePayment',[PayboxController::class,'makePayment']);
-Route::post('/paymentResult',[PayboxController::class,'paymentResult'])->name('payment-result');
+Route::group(['middleware' => 'cors'],function (){
+    Route::post('/makePayment',[PayboxController::class,'makePayment']);
+    Route::post('/paymentResult',[PayboxController::class,'paymentResult'])->name('payment-result');
+});
+
 
 
 //anticollector
