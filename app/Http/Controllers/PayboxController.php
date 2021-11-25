@@ -33,8 +33,8 @@ class PayboxController extends Controller
 
         $amount = $request->input('amount');
         $user_id = $request->input('user_id');
-        $success_url = 'nashcompany.kz';
-        $failure_url = 'nashcompany.kz';
+        $success_url = 'antikollector.kz/cabinet?success=true';
+        $failure_url = 'antikollector.kz/cabinet?success=false';
         $merchant_id = 538153;
 
         $description = 'Пополнение баланса';
