@@ -663,5 +663,17 @@ class UserController extends Controller
     }
 
 
+    public function changePassword(Request $request){
+        $phone = $request->input('phone');
+        $result['success'] = false;
+        do{
+            if (!$phone){
+                $result['message'] = 'Не передан телефон';
+                break;
+            }
+        }while(false);
+        return response()->json($result);
+    }
+
 
 }

@@ -396,7 +396,7 @@ class AnticollectorController extends Controller
                 'phone' => $phone,
                 'iin' => $iin,
                 'email' => $email,
-                'password' => $password,
+                'password' => bcrypt($password),
                 'token' => $token,
             ]);
 
