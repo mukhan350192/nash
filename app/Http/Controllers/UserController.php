@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnticollectorUserModel;
 use App\Models\User;
 use Carbon\Carbon;
 use Faker\Provider\Payment;
@@ -487,7 +488,7 @@ class UserController extends Controller
                 $result['message'] = 'Не передан пароль';
                 break;
             }
-            $user = User::where('iin', $iin)->first();
+            $user = AnticollectorUserModel::where('iin', $iin)->first();
             if (!$user) {
                 $result['message'] = 'Не найден пользователь';
                 break;
@@ -498,7 +499,7 @@ class UserController extends Controller
             }
             $token = Str::random(60);
             $token = sha1($token . time());
-            User::where('id', $user->id)->update(['token' => $token]);
+            AnticollectorUserModel::where('id', $user->id)->update(['token' => $token]);
             $result['token'] = $token;
             $result['success'] = true;
         } while (false);
