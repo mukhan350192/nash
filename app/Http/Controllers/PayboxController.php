@@ -70,10 +70,10 @@ class PayboxController extends Controller
     {
         if ($request->pg_result) {
             // DB::beginTransaction();
-            $iin = (int)$request->extra_user_id;
+            $iin = $request->extra_user_id;
             $amount = $request->pg_amount;
 
-            DB::beginTransaction();
+            //DB::beginTransaction();
             $payment = DB::table('payments')->insertGetId([
                 'iin' => $iin,
                 'amount' => $amount,
@@ -81,15 +81,15 @@ class PayboxController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
             if (!$payment) {
-                DB::rollBack();
+              //  DB::rollBack();
                 return response()->json([
                     'message' => 'fail in life',
                     'success' => false
                 ])->setStatusCode(400);
             }
-            $url = "http://37.18.30.37/api/payboxNash?amount=$amount&iin=$iin";
+            $url = "http://37.18.30.111/api/payBoxNash?amount=$amount&iin=$iin";
             file_get_contents($url);
-            DB::commit();
+            //DB::commit();
             return response()->json([
                 'success' => true,
             ]);
