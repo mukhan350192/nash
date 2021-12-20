@@ -48,6 +48,46 @@ class PersonalCabinet extends Controller
         return response()->json($result);
     }
 
+    public function getData(Request $request){
+        $token = $request->input('token');
+        $result['success'] = false;
+
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            $data = $this->getTokenData($token);
+            if (!$data){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $http = new Client(['verify' => false]);
+            $link = 'https://nash-crm.kz/api/site/getData.php';
+            $query = ['bitrix_id' => $data];
+            try {
+                $response = $http->get($link, [
+                    'query' => $query,
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+                if (isset($response)) {
+                    $result['fio'] = $response['fio'];
+                    $result['amount'] = $response['amount'];
+                    $result['type_payment'] = $response['type_payment'];
+                    break;
+                } else {
+                    $result['success'] = false;
+                    break;
+                }
+            } catch (BadResponseException $e) {
+                info($e);
+            }
+
+        }while(false);
+        return response()->json($result);
+    }
+
     public function getTokenData($token){
         if (!$token){
             return false;
