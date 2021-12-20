@@ -71,10 +71,9 @@ class PersonalCabinet extends Controller
                 ]);
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
-                if (isset($response)) {
-                    $result['fio'] = $response['fio'];
+                if (isset($response) && isset($response['amount'])) {
                     $result['amount'] = $response['amount'];
-                    $result['type_payment'] = $response['type_payment'];
+                    $result['success'] = true;
                     break;
                 } else {
                     $result['success'] = false;
