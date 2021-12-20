@@ -66,4 +66,4 @@ Route::post('/uploadDocuments',[AnticollectorController::class,'uploadDocuments'
 
 //PersonalCabinet
 Route::post('/getLeadData',[PersonalCabinet::class,'getLeadData']);
-Route::post('/getData', [PersonalCabinet::class,'getData']);
+Route::post('/getDataPayment', [PersonalCabinet::class,'getDataPayment']);

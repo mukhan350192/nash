@@ -48,7 +48,7 @@ class PersonalCabinet extends Controller
         return response()->json($result);
     }
 
-    public function getData(Request $request){
+    public function getDataPayment(Request $request){
         $token = $request->input('token');
         $result['success'] = false;
 
