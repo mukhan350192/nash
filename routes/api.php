@@ -4,6 +4,7 @@ use App\Http\Controllers\AnticollectorController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CPAController;
 use App\Http\Controllers\PayboxController;
+use App\Http\Controllers\PersonalCabinet;
 use App\Http\Controllers\UrlController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -63,3 +64,5 @@ Route::post('/getDocumentLink',[AnticollectorController::class,'getDocumentLink'
 Route::post('/getPush',[AnticollectorController::class,'getPush']);
 Route::post('/uploadDocuments',[AnticollectorController::class,'uploadDocuments']);
 
+//PersonalCabinet
+Route::post('/getLeadData',[PersonalCabinet::class,'getLeadData']);
