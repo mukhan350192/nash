@@ -33,9 +33,12 @@ class PersonalCabinet extends Controller
                 $response = $response->getBody()->getContents();
                 $response = json_decode($response, true);
                 if (isset($response)) {
-                    return $response;
+                    $result['success'] = $response['success'];
+                    $result['step'] = $response['step'];
+                    break;
                 } else {
-                    return false;
+                    $result['success'] = false;
+                    break;
                 }
             } catch (BadResponseException $e) {
                 info($e);
