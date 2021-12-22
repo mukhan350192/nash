@@ -391,14 +391,7 @@ class AnticollectorController extends Controller
                 break;
             }
             $token = Str::random(60);
-            $userID = AnticollectorUserModel::create([
-                'fio' => $fio,
-                'phone' => $phone,
-                'iin' => $iin,
-                'email' => $email,
-                'password' => bcrypt($password),
-                'token' => $token,
-            ]);
+
 
             if (!$userID) {
                 $result['message'] = 'Попробуйте позже';
@@ -413,6 +406,14 @@ class AnticollectorController extends Controller
                 $result['message'] = 'Не совпадают код';
                 break;
             }
+            $userID = AnticollectorUserModel::create([
+                'fio' => $fio,
+                'phone' => $phone,
+                'iin' => $iin,
+                'email' => $email,
+                'password' => bcrypt($password),
+                'token' => $token,
+            ]);
             $dataToBitrix = [
                 'fio' => $fio,
                 'phone' => $phone,
