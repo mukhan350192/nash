@@ -405,7 +405,9 @@ class AnticollectorController extends Controller
                 DB::rollBack();
                 break;
             }
-
+            if (strlen($phone)){
+                $phone = '7'.$phone;
+            }
             $data = DB::table('code')->where('phone', $phone)->where('code', $code)->first();
             if (!$data) {
                 $result['message'] = 'Не совпадают код';
