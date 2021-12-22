@@ -82,7 +82,7 @@ class AnticollectorController extends Controller
             }
 
             $http = new Client(['verify' => false]);
-            $link = 'https://sms.i-credit.kz/api/typeOne';
+            $link = 'https://sms.i-credit.kz/api/identification';
             try {
                 $response = $http->get($link, [
                     'query' => [
@@ -180,7 +180,7 @@ class AnticollectorController extends Controller
 
 
             $http = new Client(['verify' => false]);
-            $link = 'http://37.18.30.37/api/typeOne';
+            $link = 'http://37.18.30.37/api/identification';
             try {
                 $response = $http->get($link, [
                     'query' => [

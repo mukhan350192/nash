@@ -87,6 +87,46 @@ class PersonalCabinet extends Controller
         return response()->json($result);
     }
 
+    public function getDealStage(Request $request){
+        $token = $request->input('token');
+        $result['success'] = false;
+
+        do{
+            if (!$token){
+                $result['message'] = 'Не передан токен';
+                break;
+            }
+            $data = $this->getTokenData($token);
+            if (!$data){
+                $result['message'] = 'Не найден пользователь';
+                break;
+            }
+            $http = new Client(['verify' => false]);
+            $link = 'https://nash-crm.kz/api/site/getDealStage.php';
+            $query = ['bitrix_id' => $data];
+            try {
+                $response = $http->get($link, [
+                    'query' => $query,
+                ]);
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+                if (isset($response) && isset($response['stage'])) {
+                    $result['stage'] = $response['stage'];
+                    $result['amount'] = $response['amount'];
+                    $result['success'] = true;
+                    break;
+                } else {
+                    $result['success'] = false;
+                    break;
+                }
+            } catch (BadResponseException $e) {
+                info($e);
+            }
+
+        }while(false);
+        return response()->json($result);
+    }
+
     public function getTokenData($token){
         if (!$token){
             return false;
