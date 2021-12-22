@@ -393,11 +393,7 @@ class AnticollectorController extends Controller
             $token = Str::random(60);
 
 
-            if (!$userID) {
-                $result['message'] = 'Попробуйте позже';
-                DB::rollBack();
-                break;
-            }
+
             if (strlen($phone)){
                 $phone = '7'.$phone;
             }
@@ -414,6 +410,11 @@ class AnticollectorController extends Controller
                 'password' => bcrypt($password),
                 'token' => $token,
             ]);
+            if (!$userID) {
+                $result['message'] = 'Попробуйте позже';
+                DB::rollBack();
+                break;
+            }
             $dataToBitrix = [
                 'fio' => $fio,
                 'phone' => $phone,
