@@ -394,7 +394,7 @@ class AnticollectorController extends Controller
 
 
 
-            if (strlen($phone)){
+            if (strlen($phone) == 10){
                 $phone = '7'.$phone;
             }
             $data = DB::table('code')->where('phone', $phone)->where('code', $code)->first();
